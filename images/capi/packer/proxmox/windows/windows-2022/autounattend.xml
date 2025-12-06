@@ -140,13 +140,13 @@ Installation Notes:
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
-                    <Path>F:\virtio-win-gt-x64.msi /log "C:\Windows\Temp\Install\qemu-drivers.log" /qn /passive /norestart ADDLOCAL=ALL'</CommandLine>
+                    <Path>F:\virtio-win-gt-x64.msi /log "C:\Windows\Temp\Install\qemu-drivers.log" /qn /passive /norestart ADDLOCAL=ALL</Path>
                     <Description>Install All Drivers</Description>
                     <Order>2</Order>
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
-                    <Path>F:\virtio-win-guest-tools.exe /install /passive /norestart</CommandLine>
+                    <Path>F:\virtio-win-guest-tools.exe /install /passive /norestart</Path>
                     <Description>Install QEMU and Spice Guest Tools</Description>
                     <Order>3</Order>
                 </RunSynchronousCommand>

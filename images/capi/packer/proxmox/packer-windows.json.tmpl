@@ -20,8 +20,8 @@
         "efi_type": "4m"
       },
 
-      "boot_wait:" "{{user `boot_wait`}}",
-      "boot_command:" [
+      "boot_wait": "{{user `boot_wait`}}",
+      "boot_command": [
       "<spacebar><spacebar>"
       ],
       "task_timeout": "10m",
@@ -33,7 +33,8 @@
       "iso_storage_pool": "{{user `iso_storage_pool`}}",
       "iso_url": "{{user `iso_url`}}",
       
-      "additional_iso_files": {
+      "additional_iso_files": [
+      {
           
           "unmount": "true",
           "type": "ide0",
@@ -41,12 +42,14 @@
                        "./packer/proxmox/windows/winrm_bootstrap.txt",
                        "./packer/proxmox/windows/windows22/autounattend.xml"]
       },
-
-      "additional_iso_files": {
+      {
           "type": "ide3",
           "iso_file": "{{user `iso_virtio`}}",
           "unmount":  "true"
-      },
+      }
+      ],
+
+
 
       "cores": "{{user `cores`}}",
       "cpu_type": "{{user `cpu_type`}}",
@@ -56,7 +59,7 @@
           "format": "{{user `disk_format`}}",
           "storage_pool": "{{user `storage_pool`}}",
           "storage_pool_type": "{{user `storage_pool_type`}}",
-          "type": "scsi"
+          "type": "scsi",
           "asyncio": "native"
         }
       ],
@@ -67,7 +70,7 @@
       "network_adapters": [
         {
           "model": "virtio",
-          "bridge": "{{user `bridge`}}",
+          "bridge": "{{user `bridge`}}"
         }
       ],
       
@@ -154,7 +157,7 @@
     {
       "elevated_password": "{{.WinRMPassword}}",
       "elevated_user": "packer",
-      "script": "packer/windows/sysprep.ps1",
+      "script": "packer/proxmox/windows/sysprep.ps1",
       "type": "powershell"
     }
   ],
@@ -171,7 +174,7 @@
     "build_timestamp": "{{timestamp}}",
     "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
     "cloudbase_metadata_services": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService",
-    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService"
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService",
     "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "cloudbase_real_time_clock_utc": "true",
