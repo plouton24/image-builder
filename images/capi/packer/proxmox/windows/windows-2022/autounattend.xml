@@ -88,6 +88,12 @@ Installation Notes:
                     </InstallFrom>
                 </OSImage>
             </ImageInstall>
+            <RunSynchronous>
+            <RunSynchronousCommand>
+               <Order>1</Order>
+               <Path>cmd /c powercfg.exe /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c</Path>
+            </RunSynchronousCommand>
+         </RunSynchronous>
             <UserData>
                 <AcceptEula>true</AcceptEula>
                 <FullName>Administrator</FullName>
