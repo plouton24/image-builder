@@ -11,7 +11,7 @@
       "proxmox_url": "{{user `proxmox_url`}}",
       "insecure_skip_tls_verify": true,
       "username": "{{user `proxmox_username`}}",
-      "token": "{{user `proxmox_password`}}",
+      "token": "{{user `token`}}",
       "node": "{{ user `node` }}",
 
       "efi_config": {
@@ -20,36 +20,34 @@
         "efi_type": "4m"
       },
 
-      # First Boot
-      boot_wait: = "5s",
-      boot_command: = [
-      "<spacebar><spacebar>" # Simulate pressing "any key" to boot from CD-ROM
+      "boot_wait:" = "5s",
+      "boot_command:" = [
+      "<spacebar><spacebar>"
       ],
       "task_timeout": "10m",
       "bios": "ovmf",
+      "machine": "q35",
+      "os": "win11",
 
-      #ISO file
       "iso_file": "{{user `iso_file`}}",
       "iso_storage_pool": "{{user `iso_storage_pool`}}",
       "iso_url": "{{user `iso_url`}}",
       
-      #mounts to E:\ and ide2 is usally iso
       "additional_iso_files": {
           
-          "unmount":        = "true"
-          "type":           = "ide3"
-          "cd_files": ["./packer/proxmox/windows/sysprep.ps1",
-                       "./packer/proxmox/windows/winrm_bootstrap.ps1",
-                       "./packer/proxmox/windows/windows22/autounattend.xml"],
-      },
-      #Virtio ISO
-      "additional_iso_files": {
-          "type": = "scsi"
-          "iso_file": = "local:iso/virtio-win-0.1.185.iso"
-          "unmount": = "true"
+          "unmount": "true",
+          "type": "ide0",
+          "cd_files": ["./packer/proxmox/windows/disable-network-discovery.cmd",
+                       "./packer/proxmox/windows/winrm_bootstrap.txt",
+                       "./packer/proxmox/windows/windows22/autounattend.xml"]
       },
 
-      #VM settings
+      "additional_iso_files": {
+          "type": "ide3",
+          "iso_file": "{{user `iso_virtio`}}",
+          "unmount":  "true"
+      },
+
       "cores": "{{user `cores`}}",
       "cpu_type": "{{user `cpu_type`}}",
       "disks": [
@@ -59,6 +57,7 @@
           "storage_pool": "{{user `storage_pool`}}",
           "storage_pool_type": "{{user `storage_pool_type`}}",
           "type": "scsi"
+          "asyncio": "native"
         }
       ],
 
@@ -77,7 +76,7 @@
       "unmount_iso": "true",
       "vm_id": "{{user `vmid`}}",
 
-      #WinRM Settings
+
       "communicator": "winrm",
       "winrm_insecure": true,
       "winrm_password": "{{user `windows_admin_password`}}",
@@ -87,165 +86,108 @@
       "winrm_username": "Administrator"
     }
   ],
-  "post-processors": [
-    {
-      "environment_vars": [
-        "CUSTOM_POST_PROCESSOR={{user `custom_post_processor`}}"
-      ],
-      "inline": [
-        "if [ \"$CUSTOM_POST_PROCESSOR\" != \"true\" ]; then exit 0; fi",
-        "{{user `custom_post_processor_command`}}"
-      ],
-      "name": "custom-post-processor",
-      "type": "shell-local"
-    }
-  ],
+
   "provisioners": [
     {
-      "environment_vars": [
-        "BUILD_NAME={{user `build_name`}}"
-      ],
-      "inline": [
-        "if [ $BUILD_NAME != \"ubuntu\" ]; then exit 0; fi",
-        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
-        "sudo apt-get -qq update",
-        "echo done"
-      ],
-      "inline_shebang": "/bin/bash -e",
-      "type": "shell"
-    },
-    {
-      "environment_vars": [
-        "PYPY_HTTP_SOURCE={{user `pypy_http_source`}}"
-      ],
-      "execute_command": "BUILD_NAME={{user `build_name`}}; if [[ \"${BUILD_NAME}\" == *\"flatcar\"* ]]; then sudo {{.Vars}} -S -E bash '{{.Path}}'; fi",
-      "script": "./packer/files/flatcar/scripts/bootstrap-flatcar.sh",
-      "type": "shell"
-    },
-    {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
-        "KUBEVIRT={{user `kubevirt`}}"
-      ],
+      "except": "file",
       "extra_arguments": [
+        "-e",
+        "ansible_winrm_server_cert_validation=ignore",
         "--extra-vars",
         "{{user `ansible_common_vars`}}",
         "--extra-vars",
         "{{user `ansible_extra_vars`}}",
         "--extra-vars",
-        "{{user `ansible_user_vars`}}",
-        "--scp-extra-args",
-        "{{user `ansible_scp_extra_args`}}"
+        "{{user `ansible_user_vars`}}"
       ],
-      "playbook_file": "./ansible/firstboot.yml",
+      "playbook_file": "ansible/windows/node_windows.yml",
       "type": "ansible",
-      "user": "builder"
+      "use_proxy": false,
+      "user": "Administrator"
     },
     {
-      "expect_disconnect": true,
-      "inline": [
-        "sudo reboot now"
-      ],
-      "inline_shebang": "/bin/bash -e",
-      "type": "shell"
-    },
-    {
-      "ansible_env_vars": [
-        "ANSIBLE_SSH_ARGS='{{user `existing_ansible_ssh_args`}} {{user `ansible_common_ssh_args`}}'",
-        "KUBEVIRT={{user `kubevirt`}}"
-      ],
-      "extra_arguments": [
-        "--extra-vars",
-        "{{user `ansible_common_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_extra_vars`}}",
-        "--extra-vars",
-        "{{user `ansible_user_vars`}}",
-        "--scp-extra-args",
-        "{{user `ansible_scp_extra_args`}}"
-      ],
-      "pause_before": "10s",
-      "playbook_file": "./ansible/node.yml",
-      "type": "ansible",
-      "user": "builder"
+      "except": "file",
+      "restart_check_command": "powershell -command \"& {if ((get-content C:\\ProgramData\\lastboot.txt) -eq (Get-WmiObject win32_operatingsystem).LastBootUpTime) {Write-Output 'Sleeping for 600 seconds to wait for reboot'; start-sleep 600} else {Write-Output 'Reboot complete'}}\"",
+      "restart_command": "powershell \"& {(Get-WmiObject win32_operatingsystem).LastBootUpTime > C:\\ProgramData\\lastboot.txt; Restart-Computer -force}\"",
+      "type": "windows-restart"
     },
     {
       "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "except": "file",
       "format": "{{user `goss_format`}}",
       "format_options": "{{user `goss_format_options`}}",
       "goss_file": "{{user `goss_entry_file`}}",
       "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "target_os": "Windows",
       "tests": [
         "{{user `goss_tests_dir`}}"
       ],
       "type": "goss",
       "url": "{{user `goss_url`}}",
-      "use_sudo": true,
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "1"
+      },
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
-        "ARCH": "amd64",
         "OS": "{{user `distro_name` | lower}}",
-        "OS_VERSION": "{{user `distribution_version` | lower}}",
-        "PROVIDER": "qemu",
+        "PROVIDER": "proxmox",
         "containerd_version": "{{user `containerd_version`}}",
-        "kubernetes_cni_deb_version": "{{ user `kubernetes_cni_deb_version` }}",
-        "kubernetes_cni_rpm_version": "{{ split (user `kubernetes_cni_rpm_version`) \"-\" 0 }}",
-        "kubernetes_cni_source_type": "{{user `kubernetes_cni_source_type`}}",
-        "kubernetes_cni_version": "{{user `kubernetes_cni_semver` | replace \"v\" \"\" 1}}",
-        "kubernetes_deb_version": "{{ user `kubernetes_deb_version` }}",
-        "kubernetes_rpm_version": "{{ split (user `kubernetes_rpm_version`) \"-\" 0  }}",
-        "kubernetes_source_type": "{{user `kubernetes_source_type`}}",
-        "kubernetes_version": "{{user `kubernetes_semver` | replace \"v\" \"\" 1}}"
+        "distribution_version": "{{user `distro_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}",
+        "ssh_source_url": "{{user `ssh_source_url`}}"
       },
       "version": "{{user `goss_version`}}"
     },
     {
-      "expect_disconnect": true,
       "inline": [
-        "echo '{{user `ssh_password`}}' | sudo -S -E sh -c 'usermod -L {{user `ssh_username`}} && shutdown'"
+        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
       ],
-      "inline_shebang": "/bin/bash -e",
-      "type": "shell"
+      "type": "powershell"
+    },
+    {
+      "elevated_password": "{{.WinRMPassword}}",
+      "elevated_user": "packer",
+      "script": "packer/windows/sysprep.ps1",
+      "type": "powershell"
     }
   ],
   "variables": {
+    "additional_debug_files": null,
     "ansible_common_vars": "",
-    "ansible_extra_vars": "ansible_python_interpreter=/usr/bin/python3",
-    "ansible_scp_extra_args": "",
+    "ansible_extra_vars": "",
     "ansible_user_vars": "",
+    "ansible_scp_extra_args": "",
     "artifact_name": "{{user `build_name`}}-kube-{{user `kubernetes_semver`}}",
     "boot_wait": "10s",
-    "bios": "seabios",
+    "bios": "ovmf",
     "bridge": "{{env `PROXMOX_BRIDGE`}}",
     "build_timestamp": "{{timestamp}}",
+    "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
+    "cloudbase_metadata_services": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService",
+    "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.configdrive.ConfigDriveService"
+    "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
+    "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
+    "cloudbase_real_time_clock_utc": "true",
+    "containerd_url": "",
     "containerd_version": null,
-    "containerd_service_url": "https://raw.githubusercontent.com/containerd/containerd/refs/tags/v{{user `containerd_version`}}/containerd.service",
-    "runc_version": null,
     "cores": "2",
     "crictl_version": null,
-    "disk_format": "qcow2",
+    "disk_format": "raw",
     "disk_size": "20G",
     "existing_ansible_ssh_args": "{{env `ANSIBLE_SSH_ARGS`}}",
-    "http_directory": "./packer/proxmox/linux/{{user `distro_name`}}/http/",
+    "http_directory": "./packer/proxmox/windows/{{user `distro_name`}}/http/",
     "iso_storage_pool": "{{env `PROXMOX_ISO_POOL`}}",
-    "kubernetes_cni_deb_version": null,
-    "kubernetes_cni_http_source": null,
-    "kubernetes_cni_rpm_version": null,
-    "kubernetes_cni_semver": null,
-    "kubernetes_cni_source_type": null,
+    "kubernetes_base_url": "https://kubernetesreleases.blob.core.windows.net/kubernetes/{{user `kubernetes_semver`}}/binaries/node/windows/{{user `kubernetes_goarch`}}",
     "kubernetes_container_registry": null,
-    "kubernetes_deb_gpg_key": null,
-    "kubernetes_deb_repo": null,
-    "kubernetes_deb_version": null,
-    "kubernetes_http_source": null,
-    "kubernetes_load_additional_imgs": null,
-    "kubernetes_rpm_gpg_check": null,
-    "kubernetes_rpm_gpg_key": null,
-    "kubernetes_rpm_repo": null,
-    "kubernetes_rpm_version": null,
-    "kubernetes_semver": null,
-    "kubernetes_series": null,
-    "kubernetes_source_type": null,
+    "kubernetes_http_package_url": "",
+    "kubernetes_typed_version": "kube-{{user `kubernetes_semver`}}",
     "memory": "2048",
     "mtu": "{{env `PROXMOX_MTU`}}",
     "node": "{{env `PROXMOX_NODE`}}",
@@ -253,14 +195,19 @@
     "oem_id": "{{ user `oem_id` }}",
     "proxmox_url": "{{env `PROXMOX_URL`}}",
     "sockets": "2",
-    "ssh_password": "$SSH_PASSWORD",
-    "ssh_username": "builder",
     "storage_pool": "{{env `PROXMOX_STORAGE_POOL`}}",
     "storage_pool_type": "lvm",
     "token": "{{env `PROXMOX_TOKEN`}}",
     "username": "{{env `PROXMOX_USERNAME`}}",
     "vlan_tag": "{{env `PROXMOX_VLAN`}}",
     "vmid": "",
-    "scsi_controller": "virtio-scsi-pci"
+    "scsi_controller": "virtio-scsi-single",
+    "nssm_url": null,
+    "prepull": null,
+    "unattend_timezone": "Pacific Standard Time",
+    "windows_admin_password": "{{user `windows_admin_password`}}",
+    "windows_service_manager": null,
+    "windows_updates_categories": null,
+    "windows_updates_kbs": null
   }
 }
