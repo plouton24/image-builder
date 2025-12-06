@@ -882,7 +882,7 @@ build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
 build-proxmox-ubuntu-2404-efi: ## Builds the Proxmox ubuntu-2404-efi image that EFI boots
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
-build-proxmox-windows-2022 ## Builds the Proxmox Windows 2022 image
+build-proxmox-windows-2022: ## Builds the Proxmox Windows 2022 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 build-vultr-ubuntu-2404: ## Builds Ubuntu 24.04 Vultr Snapshot
