@@ -173,6 +173,7 @@ deps-huaweicloud: deps-common
 .PHONY: deps-proxmox
 deps-proxmox: ## Installs/checks dependencies for Proxmox builds
 deps-proxmox: deps-common
+	hack/ensure-ansible-windows.sh
 	$(PACKER) init packer/config.pkr.hcl
 	$(PACKER) init packer/proxmox/config.pkr.hcl
 
@@ -401,7 +402,7 @@ NUTANIX_BUILD_NAMES ?= nutanix-ubuntu-2204 nutanix-ubuntu-2404 nutanix-rhel-8 nu
 
 HCLOUD_BUILD_NAMES ?= hcloud-ubuntu-2204 hcloud-ubuntu-2404 hcloud-rockylinux-8 hcloud-rockylinux-9 hcloud-flatcar hcloud-flatcar-arm64
 
-PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar
+PROXMOX_BUILD_NAMES 		?= proxmox-ubuntu-2204 proxmox-ubuntu-2404 proxmox-ubuntu-2404-efi proxmox-rockylinux-9 proxmox-flatcar proxmox-windows-2022
 
 VULTR_BUILD_NAMES 				?=	vultr-ubuntu-2204 vultr-ubuntu-2404
 
@@ -881,6 +882,7 @@ build-proxmox-ubuntu-2204: ## Builds the Proxmox ubuntu-2204 image
 build-proxmox-ubuntu-2404: ## Builds the Proxmox ubuntu-2404 image
 build-proxmox-ubuntu-2404-efi: ## Builds the Proxmox ubuntu-2404-efi image that EFI boots
 build-proxmox-rockylinux-9: ## Builds the Proxmox rockylinux-9 image
+build-proxmox-windows-2022 ## Builds the Proxmox Windows 2022 image
 
 build-vultr-ubuntu-2204: ## Builds Ubuntu 22.04 Vultr Snapshot
 build-vultr-ubuntu-2404: ## Builds Ubuntu 24.04 Vultr Snapshot
