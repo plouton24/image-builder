@@ -19,13 +19,13 @@ Installation Notes:
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <DriverPaths>
                 <PathAndCredentials wcm:action="add" wcm:keyValue="1">
-                    <Path>F:\NetKVM\2k22\amd64\</Path>
+                    <Path>D:\NetKVM\2k22\amd64\</Path>
                 </PathAndCredentials>
                 <PathAndCredentials wcm:action="add" wcm:keyValue="2">
-                    <Path>F:\viostor\2k22\amd64\</Path>
+                    <Path>D:\viostor\2k22\amd64\</Path>
                 </PathAndCredentials>
                 <PathAndCredentials wcm:action="add" wcm:keyValue="3">
-                    <Path>F:\vioscsi\2k22\amd64\</Path>
+                    <Path>D:\vioscsi\2k22\amd64\</Path>
                 </PathAndCredentials>
             </DriverPaths>
         </component>
@@ -78,7 +78,7 @@ Installation Notes:
                 <OSImage>
                     <InstallTo>
                         <DiskID>0</DiskID>
-                        <PartitionID>2</PartitionID>
+                        <PartitionID>3</PartitionID>
                     </InstallTo>
                     <InstallFrom>
                         <MetaData wcm:action="add">
@@ -140,13 +140,7 @@ Installation Notes:
                 </RunSynchronousCommand>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
-                    <Path>F:\virtio-win-gt-x64.msi /log "C:\Windows\Temp\Install\qemu-drivers.log" /qn /passive /norestart ADDLOCAL=ALL</Path>
-                    <Description>Install All Drivers</Description>
-                    <Order>2</Order>
-                </RunSynchronousCommand>
-                <RunSynchronousCommand wcm:action="add">
-                    <WillReboot>Always</WillReboot>
-                    <Path>F:\virtio-win-guest-tools.exe /install /passive /norestart</Path>
+                    <Path>D:\virtio-win-guest-tools.exe /qn /passive /norestart</Path>
                     <Description>Install QEMU and Spice Guest Tools</Description>
                     <Order>3</Order>
                 </RunSynchronousCommand>
@@ -239,7 +233,7 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c %SystemDrive%\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File a:\enable-winrm.ps1</CommandLine>
+                    <CommandLine>cmd.exe /c %SystemDrive%\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File f:\enable-winrm.ps1</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>

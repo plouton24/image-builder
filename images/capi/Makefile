@@ -643,12 +643,11 @@ $(HCLOUD_VALIDATE_TARGETS): deps-hcloud
 
 .PHONY: $(PROXMOX_BUILD_TARGETS)
 $(PROXMOX_BUILD_TARGETS): deps-proxmox set-ssh-password
-	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) \
-    -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" \
-    -only=file $(ABSOLUTE_PACKER_VAR_FILES) \
-    packer/proxmox/packer-windows.json,)
-	$(if $(findstring windows,$@),hack/windows-unattend.py \
-    --unattend-file='./packer/proxmox/windows/$(subst build-proxmox-,,$@)/autounattend.xml',)
+    # This uses a packer file builder to input unattend variables into a JSON file to be consumed by the python script before running the vsphere provisioner
+	$(if $(findstring windows,$@),$(PACKER) build $(PACKER_WINDOWS_NODE_FLAGS) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" -only=file $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer-windows.json,)
+	$(if $(findstring windows,$@),hack/windows-unattend.py --unattend-file='./packer/proxmox/windows/$(subst build-proxmox-,,$@)/autounattend.xml',)
+	$(PACKER) build $(if $(findstring windows,$@),$(PACKER_WINDOWS_NODE_FLAGS),$(PACKER_NODE_FLAGS)) -var-file="$(abspath packer/proxmox/$(subst build-proxmox-,,$@).json)" $(ABSOLUTE_PACKER_VAR_FILES) packer/proxmox/packer$(if $(findstring windows,$@),-windows,).json
+
 
 .PHONY: $(PROXMOX_VALIDATE_TARGETS)
 $(PROXMOX_VALIDATE_TARGETS): deps-proxmox set-ssh-password

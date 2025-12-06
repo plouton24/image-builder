@@ -6,6 +6,7 @@
   "iso_file": "{{env `ISO_FILE`}}",
   "os_display_name": "Windows Server 2022",
   "unmount_iso": "true",
-  "iso_virtio": "local:iso/virtio-win-0.1.286.iso",
-  "windows_admin_password": "Password#1"
+  "iso_virtio": "local:iso/virtio-win-0.1.285.iso",
+  "windows_admin_password": "Password#1",
+  "cpu_type": "host"
 }
