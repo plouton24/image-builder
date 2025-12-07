@@ -233,12 +233,12 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c %SystemDrive%\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File f:\enable-winrm.ps1</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\enable-winrm.ps1"</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>cmd.exe /c f:\disable-network-discovery.cmd</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\disable-network-discovery.cmd"</CommandLine>
                     <Description>Disable Network Discovery</Description>
                     <Order>11</Order>
                 </SynchronousCommand>
