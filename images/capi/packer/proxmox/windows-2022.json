@@ -8,5 +8,6 @@
   "unmount_iso": "true",
   "iso_virtio": "local:iso/virtio-win-0.1.285.iso",
   "windows_admin_password": "Password#1",
-  "cpu_type": "host"
+  "cpu_type": "host",
+  "goss_version": "0.4.9"
 }
