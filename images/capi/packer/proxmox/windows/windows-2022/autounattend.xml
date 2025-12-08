@@ -27,6 +27,9 @@ Installation Notes:
                 <PathAndCredentials wcm:action="add" wcm:keyValue="3">
                     <Path>D:\vioscsi\2k22\amd64\</Path>
                 </PathAndCredentials>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="3">
+                    <Path>D:\</Path>
+                </PathAndCredentials>
             </DriverPaths>
         </component>
         <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
@@ -138,12 +141,6 @@ Installation Notes:
                     <Path>%SystemRoot%\System32\reg.exe ADD "HKLM\System\CurrentControlSet\Control\TimeZoneInformation" /v RealTimeIsUniversal /d 1 /t REG_DWORD /f</Path>
                     <Order>1</Order>
                 </RunSynchronousCommand>
-                <RunSynchronousCommand wcm:action="add">
-                    <WillReboot>Always</WillReboot>
-                    <Path>D:\virtio-win-guest-tools.exe /qn /passive /norestart</Path>
-                    <Description>Install QEMU and Spice Guest Tools</Description>
-                    <Order>3</Order>
-                </RunSynchronousCommand>
             </RunSynchronous>
         </component>
         <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
@@ -233,17 +230,17 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\Instll_agent.ps1"</CommandLine>
-                    <Description>Enable WinRM</Description>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install-agent.ps1"</CommandLine>
+                    <Description>Install Virtio Drivers and Qemu Agent</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\enable-winrm.ps1"</CommandLine>
-                    <Description>Enable WinRM</Description>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\disable-network-discovery.cmd"</CommandLine>
+                    <Description>Disable Network Discovery</Description>
                     <Order>11</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\disable-network-discovery.cmd"</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\disable-network-discovery.cmd"</CommandLine>
                     <Description>Disable Network Discovery</Description>
                     <Order>12</Order>
                 </SynchronousCommand>
