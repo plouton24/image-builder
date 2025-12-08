@@ -1,3 +1,32 @@
+
+<#
+    Install-MSI function adapted from:
+    https://github.com/fansec/proxmox_dev/blob/main/packer/win2019/mount/Install-Agent.ps1
+
+    Original Copyright:
+    Copyright (c) fansec
+
+    Licensed under the MIT License:
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+    Modifications by: Martin Sanchez 2025
+#>
 #Start Transcript 
 
 $transcriptPath = "C:\Logs\Install-Transcript-$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
@@ -13,7 +42,7 @@ $logDirectory = "C:\Logs\"
 if (-not (Test-Path -Path $logDirectory)) {
     New-Item -ItemType Directory -Path $logDirectory -Force
 }
-
+/*
 # Function to install MSI packages
 function Install-MSI {
     param (
@@ -38,7 +67,7 @@ function Find-DriverFile {
         [string]$fileName
     )
 
-    # --- 1. Try D: first ---
+    #Try D: first
     $path = Get-ChildItem -Path "D:\" -Recurse -Filter $fileName -ErrorAction SilentlyContinue |
         Select-Object -ExpandProperty FullName -First 1
 
@@ -48,7 +77,7 @@ function Find-DriverFile {
 
     Write-Output "File '$fileName' not found on D:. Searching all drives..."
 
-    # --- 2. Search ALL drives except D: ---
+    #Search ALL drives except D:
     $allDrives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Name -ne 'D' }
 
     foreach ($drive in $allDrives) {
