@@ -22,7 +22,7 @@
 
       "boot_wait": "{{user `boot_wait`}}",
       "boot_command": [
-      "<spacebar><spacebar>"
+      "<spacebar><spacebar><spacebar>""
       ],
       "task_timeout": "10m",
       "bios": "ovmf",
@@ -140,7 +140,7 @@
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
         "OS": "{{user `distro_name` | lower}}",
-        "PROVIDER": "proxmox",
+        "PROVIDER": "",
         "containerd_version": "{{user `containerd_version`}}",
         "distribution_version": "{{user `distro_version`}}",
         "kubernetes_version": "{{user `kubernetes_semver`}}",
@@ -152,13 +152,13 @@
     },
     {
       "inline": [
-        "rm -Force -Recurse C:\\var\\log\\kubelet\\*"
+        "nssm stop kubelet && rm -Force -Recurse C:\\var\\log\\kubelet\\*"
       ],
       "type": "powershell"
     },
     {
       "elevated_password": "{{.WinRMPassword}}",
-      "elevated_user": "packer",
+      "elevated_user": "Administrator",
       "script": "packer/proxmox/windows/sysprep.ps1",
       "type": "powershell"
     }
