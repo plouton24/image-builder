@@ -233,7 +233,7 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>D:\virtio-win-guest-tools.exe /qn /passive /norestart</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\Instll_agent.ps1"</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
