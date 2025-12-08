@@ -233,14 +233,19 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\enable-winrm.ps1"</CommandLine>
+                    <CommandLine>D:\virtio-win-guest-tools.exe /qn /passive /norestart</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\enable-winrm.ps1"</CommandLine>
+                    <Description>Enable WinRM</Description>
+                    <Order>11</Order>
+                </SynchronousCommand>
+                <SynchronousCommand wcm:action="add">
                     <CommandLine>powershell -ExecutionPolicy Bypass -Command "f:\disable-network-discovery.cmd"</CommandLine>
                     <Description>Disable Network Discovery</Description>
-                    <Order>11</Order>
+                    <Order>12</Order>
                 </SynchronousCommand>
             </FirstLogonCommands>
             <OOBE>
