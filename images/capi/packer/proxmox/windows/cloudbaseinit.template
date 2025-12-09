@@ -1,0 +1,4 @@
+###cloudbase conf
+[nocloud]
+metadata_file=D:\META_DATA
+userdata_file=D:\USER_DATA
