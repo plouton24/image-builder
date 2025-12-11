@@ -3,9 +3,10 @@
 # (uppercase) on a NoCloud config-drive. As currrently IONOS/CAPI PROXMOX
 # uses go-diskfs.go in inject.go to apply network-config but gets renamed to NETWORK_CONFIG
 import sys
-
+import os
 from cloudbaseinit.metadata import factory as meta_factory
-from cloudbaseinit.metadata.services import nocloudservice
+from cloudbaseinit.metadata.services.nocloudservice import \
+    NoCloudNetworkConfigParser
 from cloudbaseinit.plugins.common import networkconfig
 from cloudbaseinit.utils import serialization
 from cloudbaseinit import exception as cb_exception
@@ -24,20 +25,21 @@ networkdata_file = "NETWORK_CONFIG"
 
 def main():
     # Get the currently-selected metadata service (from config)
-    service = meta_factory.get_metadata_service()
+    #service = meta_factory.get_metadata_service().NoCloudDriveService
 
     # We only care if it's NoCloudConfigDriveService, as cloudbase config is set Nocloud
-    if not isinstance(service, nocloudservice.NoCloudConfigDriveService):
-        LOG.info("Active metadata service is not NoCloudConfigDriveService; "
-                 "skipping networkdata_file handling")
-        return 0
 
     # Try to read networkdata_file from the config drive cache
     try:
-        raw_network_data = service._get_cache_data(
-            networkdata_file,
-            decode=True,
-        )
+        networkdata_path = r"D:\\NETWORK_CONFIG"
+        if not os.path.exists(networkdata_path):
+            LOG.error("NETWORK_FILE not found at %s", networkdata_path)
+            return 0
+
+        LOG.info("Loading NETWORK_FILE directly from %s", networkdata_path)
+
+        with open(networkdata_path, "r", encoding="utf-8") as f:
+            raw_network_data = f.read()
     except cb_exception.NotExistingMetadataException:
         LOG.info("networkdata_file not found in NoCloud cache")
         return 0
