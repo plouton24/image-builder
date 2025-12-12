@@ -237,7 +237,7 @@ Installation Notes:
                     <Order>11</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install-agent.ps1"</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install_agent.ps1"</CommandLine>
                     <Description>Disable Network Discovery</Description>
                     <Order>12</Order>
                 </SynchronousCommand>
