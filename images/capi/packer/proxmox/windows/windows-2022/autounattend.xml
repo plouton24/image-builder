@@ -27,9 +27,6 @@ Installation Notes:
                 <PathAndCredentials wcm:action="add" wcm:keyValue="3">
                     <Path>D:\vioscsi\2k22\amd64\</Path>
                 </PathAndCredentials>
-                <PathAndCredentials wcm:action="add" wcm:keyValue="3">
-                    <Path>D:\</Path>
-                </PathAndCredentials>
             </DriverPaths>
         </component>
         <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
