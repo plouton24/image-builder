@@ -227,8 +227,8 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install-agent.ps1"</CommandLine>
-                    <Description>Install Virtio Drivers and Qemu Agent</Description>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\enable-winrm.ps1"</CommandLine>
+                    <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
@@ -237,7 +237,7 @@ Installation Notes:
                     <Order>11</Order>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\disable-network-discovery.cmd"</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install-agent.ps1"</CommandLine>
                     <Description>Disable Network Discovery</Description>
                     <Order>12</Order>
                 </SynchronousCommand>
