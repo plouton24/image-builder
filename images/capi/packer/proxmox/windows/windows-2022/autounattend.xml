@@ -227,7 +227,7 @@ Installation Notes:
                     <Description>Disable password expiration for Administrator user</Description>
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
-                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\enable-winrm.ps1"</CommandLine>
+                    <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\enable_winrm.ps1"</CommandLine>
                     <Description>Enable WinRM</Description>
                     <Order>10</Order>
                 </SynchronousCommand>
