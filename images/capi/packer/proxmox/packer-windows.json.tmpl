@@ -28,11 +28,14 @@
       "bios": "ovmf",
       "machine": "q35",
       "os": "win11",
-
-      "iso_file": "{{user `iso_file`}}",
-      "iso_storage_pool": "{{user `iso_storage_pool`}}",
-      "iso_url": "{{user `iso_url`}}",
-      "iso_checksum": "none",
+      "boot_iso": [
+          "type": "scsi"
+          "iso_file": "{{user `iso_file`}}",
+          "iso_storage_pool": "{{user `iso_storage_pool`}}",
+          "iso_url": "{{user `iso_url`}}",
+          "iso_checksum": "none"
+      ],
+     
       
       "additional_iso_files": [
       {
@@ -136,7 +139,8 @@
       "url": "{{user `goss_url`}}",
       "use_sudo": false,
       "vars_env": {
-        "GOSS_MAX_CONCURRENT": "1"
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
       },
       "vars_file": "{{user `goss_vars_file`}}",
       "vars_inline": {
