@@ -42,7 +42,7 @@ $logDirectory = "C:\Logs\"
 if (-not (Test-Path -Path $logDirectory)) {
     New-Item -ItemType Directory -Path $logDirectory -Force
 }
-/*
+
 # Function to install MSI packages
 function Install-MSI {
     param (
@@ -51,15 +51,15 @@ function Install-MSI {
     )
 
     if (Test-Path -Path $msiPath) {
-        Write-Output "Installing $msiPath"
+        Write-Host "Installing $msiPath"
         Start-Process msiexec -Wait -ArgumentList @('/i', $msiPath, '/log', $logFile, '/qn', '/passive', '/norestart', 'ADDLOCAL=ALL')
         if ($LASTEXITCODE -eq 0) {
-            Write-Output "$msiPath installed successfully."
+            Write-Host "$msiPath installed successfully."
         } else {
-            Write-Output "Failed to install $msiPath. Check log file: $logFile"
+            Write-Host "Failed to install $msiPath. Check log file: $logFile"
         }
     } else {
-        Write-Output "MSI path $msiPath not found."
+        Write-Host "MSI path $msiPath not found."
     }
 }
 function Find-DriverFile {
@@ -75,7 +75,7 @@ function Find-DriverFile {
         return $path
     }
 
-    Write-Output "File '$fileName' not found on D:. Searching all drives..."
+    Write-Host "File '$fileName' not found on D:. Searching all drives..."
 
     #Search ALL drives except D:
     $allDrives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Name -ne 'D' }
