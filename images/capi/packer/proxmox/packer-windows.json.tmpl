@@ -28,13 +28,13 @@
       "bios": "ovmf",
       "machine": "q35",
       "os": "win11",
-      "boot_iso": [
+      "boot_iso": {
           "type": "scsi",
           "iso_file": "{{user `iso_file`}}",
           "iso_storage_pool": "{{user `iso_storage_pool`}}",
           "iso_url": "{{user `iso_url`}}",
           "iso_checksum": "none"
-      ],
+      },
      
       
       "additional_iso_files": [
