@@ -28,7 +28,7 @@
       "bios": "ovmf",
       "machine": "q35",
       "os": "win11",
-      "boot": "order=scsi1;ide2",
+      "boot": "order=scsi0;scsi1;ide2",
       "boot_iso": {
           "iso_file": "{{user `iso_file`}}",
           "iso_storage_pool": "{{user `iso_storage_pool`}}",
