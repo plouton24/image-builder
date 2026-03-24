@@ -20,7 +20,7 @@ if( Test-Path $Env:SystemRoot\system32\Sysprep\unattend.xml ) {
 }
 
 Write-Output 'Adding Cloud Patches'
-Add-Content "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\conf\cloudbase-init.conf" "`r`nmetadata_file=META_DATA`r`nuserdata_file=USER_DATA`r`nnetwork_file=NETWORK_CONFIG`r`n"
+Add-Content $path "`r`n###cloudbase conf`r`n[nocloud]`r`nmetadata_file=META_DATA`r`nuserdata_file=USER_DATA`r`nnetwork_file=NETWORK_CONFIG`r`n"
 Copy-Item "F:\cloudbase_helper.py" "C:\Program Files\Cloudbase Solutions\Cloudbase-Init\LocalScripts\cloudbase_helper.py" -Force
 $unattendedXml = "$ENV:ProgramFiles\Cloudbase Solutions\Cloudbase-Init\conf\Unattend.xml"
 $FileExists = Test-Path $unattendedXml
