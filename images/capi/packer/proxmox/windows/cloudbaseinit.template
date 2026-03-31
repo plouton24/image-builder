@@ -1,5 +1,0 @@
-###cloudbase conf
-[nocloud]
-metadata_file=D:\META_DATA
-userdata_file=D:\USER_DATA
-Add-Content $path "`r`n[nocloud]`r``nmetadata_file=META_DATA`r`nuserdata_file=USER_DATA`r`nnetwork_file=NETWORK_CONFIG`r`n"

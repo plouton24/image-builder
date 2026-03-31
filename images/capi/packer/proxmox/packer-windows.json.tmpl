@@ -10,7 +10,7 @@
 
       "proxmox_url": "{{user `proxmox_url`}}",
       "insecure_skip_tls_verify": true,
-      "username": "{{user `proxmox_username`}}",
+      "username": "{{user `username`}}",
       "token": "{{user `token`}}",
       "node": "{{ user `node` }}",
 
@@ -49,8 +49,7 @@
           "cd_files": ["./packer/proxmox/windows/disable-network-discovery.cmd",
                        "./packer/proxmox/windows/enable_winrm.ps1",
                        "./packer/proxmox/windows/windows-2022/autounattend.xml",
-                       "./packer/proxmox/windows/Install_agent.ps1",
-                       "./packer/proxmox/windows/cloudbase_helper.py"
+                       "./packer/proxmox/windows/Install_agent.ps1"
                       ]
       }
       ],
@@ -125,6 +124,41 @@
     },
 
     {
+      "arch": "{{user `goss_arch`}}",
+      "download_path": "{{user `goss_download_path`}}",
+      "except": "file",
+      "format": "{{user `goss_format`}}",
+      "format_options": "{{user `goss_format_options`}}",
+      "goss_file": "{{user `goss_entry_file`}}",
+      "inspect": "{{user `goss_inspect_mode`}}",
+      "remote_folder": "{{user `goss_remote_folder`}}",
+      "remote_path": "{{user `goss_remote_path`}}",
+      "skip_install": "{{user `goss_skip_install`}}",
+      "target_os": "Windows",
+      "tests": [
+        "{{user `goss_tests_dir`}}"
+      ],
+      "type": "goss",
+      "url": "{{user `goss_url`}}",
+      "use_sudo": false,
+      "vars_env": {
+        "GOSS_MAX_CONCURRENT": "1",
+        "GOSS_USE_ALPHA": "1"
+      },
+      "vars_file": "{{user `goss_vars_file`}}",
+      "vars_inline": {
+        "OS": "{{user `distro_name` | lower}}",
+        "PROVIDER": "proxmox",
+        "containerd_version": "{{user `containerd_version`}}",
+        "distribution_version": "{{user `distribution_version`}}",
+        "kubernetes_version": "{{user `kubernetes_semver`}}",
+        "pause_image": "{{user `pause_image`}}",
+        "runtime": "{{user `runtime`}}",
+        "ssh_source_url": "{{user `ssh_source_url`}}"
+      },
+      "version": "{{user `goss_version`}}"
+    },
+    {
       "inline": [
         "nssm stop kubelet && rm -Force -Recurse C:\\var\\log\\kubelet\\*"
       ],
@@ -151,6 +185,9 @@
     "cloudbase_init_url": "https://github.com/cloudbase/cloudbase-init/releases/download/{{user `cloudbase_init_version`}}/CloudbaseInitSetup_{{user `cloudbase_init_version` | replace_all `.` `_` }}_x64.msi",
     "cloudbase_metadata_services": "cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService",
     "cloudbase_metadata_services_unattend": "cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService",
+    "cloudbase_nocloud_metadata_file": "META_DATA",
+    "cloudbase_nocloud_networkdata_file": "NETWORK_CONFIG",
+    "cloudbase_nocloud_userdata_file": "USER_DATA",
     "cloudbase_plugins": "cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin, cloudbaseinit.plugins.common.mtu.MTUPlugin, cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin, cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin, cloudbaseinit.plugins.common.ephemeraldisk.EphemeralDiskPlugin, cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin, cloudbaseinit.plugins.common.userdata.UserDataPlugin, cloudbaseinit.plugins.common.localscripts.LocalScriptsPlugin, cloudbaseinit.plugins.windows.createuser.CreateUserPlugin, cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin",
     "cloudbase_plugins_unattend": "cloudbaseinit.plugins.common.mtu.MTUPlugin",
     "cloudbase_real_time_clock_utc": "true",
@@ -184,7 +221,7 @@
     "nssm_url": null,
     "prepull": null,
     "unattend_timezone": "Pacific Standard Time",
-    "windows_admin_password": "{{user `windows_admin_password`}}",
+    "windows_admin_password": "{{env `WINDOWS_ADMIN_PASSWORD`}}",
     "windows_service_manager": null,
     "windows_updates_categories": null,
     "windows_updates_kbs": null
