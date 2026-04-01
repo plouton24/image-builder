@@ -703,11 +703,8 @@ windows:
         - "metadata_file=META_DATA"
         - "networkdata_file=NETWORK_CONFIG"
         - "userdata_file=USER_DATA"
-      'c:/program files/Cloudbase Solutions/Cloudbase-init/conf/cloudbase-init-unattend.conf':
-        exists: true
-        filetype: file
-        contains:
-        - "metadata_services=cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService"
       'c:/program files/Cloudbase Solutions/Cloudbase-init/localscripts/cloudbase_helper.py':
         exists: true
         filetype: file
+        contains:
+        - "Apply Proxmox NoCloud network data staged as NETWORK_CONFIG."
