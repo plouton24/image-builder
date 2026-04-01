@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--*************************************************
-Windows Server 2019 Answer File Generator
-Created using Windows AFG found at:
-;http://www.windowsafg.com
+Proxmox Windows Server 2022 Answer File
 
-Installation Notes:
-- We currently assume your image is using a licesnsed media, and hard code product keys accordingly
-- ProductKey: must be removed if using an eval version
-- The OOBE and UserAccounts sections: might be removed for administrator details
-- The Timezone in this file should match the location your using (otherwise you hit race conditions related to time.windows.com)
-- We hard code an administrative passcode in here, which administrators may need to modify
-- There are many other parameters in here which may need to be changed.  Over time we will parameterize these as part of the image-builder process
+Assumptions and notes:
+
+- This file assumes licensed installation media. Remove the ProductKey entries
+  below if you are building from an evaluation ISO.
+- The build currently installs /IMAGE/INDEX 1 from the Windows Server 2022 ISO.
+- The VirtIO driver ISO is expected to be attached as D: and to expose the
+  NetKVM, viostor, and vioscsi Windows Server 2022 amd64 paths used below.
+- The generated helper ISO is expected to be attached as F: and to contain
+  enable_winrm.ps1, disable-network-discovery.cmd, and Install_agent.ps1.
+- The VM is expected to boot in UEFI mode and install to disk 0 using the
+  EFI/MSR/Primary GPT layout defined here. Windows is installed to partition 3.
+- The Administrator password placeholders in oobeSystem are rewritten by
+  hack/windows-unattend.py from WINDOWS_ADMIN_PASSWORD or packer_cache/unattend.json.
 **************************************************-->
-<unattend xmlns="urn:schemas-microsoft-com:unattend">
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
     <settings pass="windowsPE">
-        <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <DriverPaths>
                 <PathAndCredentials wcm:action="add" wcm:keyValue="1">
                     <Path>D:\NetKVM\2k22\amd64\</Path>
@@ -29,9 +31,7 @@ Installation Notes:
                 </PathAndCredentials>
             </DriverPaths>
         </component>
-        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <DiskConfiguration>
                 <Disk wcm:action="add">
                     <CreatePartitions>
@@ -98,12 +98,14 @@ Installation Notes:
                 <AcceptEula>true</AcceptEula>
                 <FullName>Administrator</FullName>
                 <Organization>Organization</Organization>
+                <ProductKey>
+                    <Key>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</Key>
+                    <WillShowUI>OnError</WillShowUI>
+                </ProductKey>
             </UserData>
             <EnableFirewall>true</EnableFirewall>
         </component>
-        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <SetupUILanguage>
                 <UILanguage>en-US</UILanguage>
             </SetupUILanguage>
@@ -115,23 +117,17 @@ Installation Notes:
         </component>
     </settings>
     <settings pass="offlineServicing">
-        <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-LUA-Settings" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <EnableLUA>false</EnableLUA>
         </component>
     </settings>
     <settings pass="generalize">
-        <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-Security-SPP" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <SkipRearm>1</SkipRearm>
         </component>
     </settings>
     <settings pass="specialize">
-        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <RunSynchronous>
                 <RunSynchronousCommand wcm:action="add">
                     <WillReboot>Always</WillReboot>
@@ -140,39 +136,29 @@ Installation Notes:
                 </RunSynchronousCommand>
             </RunSynchronous>
         </component>
-        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <InputLocale>0409:00000409</InputLocale>
             <SystemLocale>en-US</SystemLocale>
             <UILanguage>en-US</UILanguage>
             <UILanguageFallback>en-US</UILanguageFallback>
             <UserLocale>en-US</UserLocale>
         </component>
-        <component name="Microsoft-Windows-Security-SPP-UX" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-Security-SPP-UX" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <SkipAutoActivation>true</SkipAutoActivation>
         </component>
-        <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-SQMApi" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <CEIPEnabled>0</CEIPEnabled>
         </component>
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-            <ComputerName></ComputerName>
-            <!--ProductKey>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</ProductKey-->
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <ComputerName />
+            <ProductKey>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</ProductKey>
         </component>
     </settings>
     <settings pass="oobeSystem">
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS"
-            xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <AutoLogon>
                 <Password>
-                    <Value></Value>
+                    <Value>Password#1</Value>
                     <PlainText>true</PlainText>
                 </Password>
                 <Enabled>true</Enabled>
@@ -206,7 +192,7 @@ Installation Notes:
                     <Order>5</Order>
                     <Description>Show Run command in Start Menu</Description>
                 </SynchronousCommand>
-                <SynchronousCommand wcm:faction="add">
+                <SynchronousCommand wcm:action="add">
                     <CommandLine>%SystemRoot%\System32\reg.exe ADD HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\ /v StartMenuAdminTools /t REG_DWORD /d 1 /f</CommandLine>
                     <Order>6</Order>
                     <Description>Show Administrative Tools in Start Menu</Description>
@@ -238,7 +224,7 @@ Installation Notes:
                 </SynchronousCommand>
                 <SynchronousCommand wcm:action="add">
                     <CommandLine>powershell -ExecutionPolicy Bypass -Command "F:\Install_agent.ps1"</CommandLine>
-                    <Description>Disable Network Discovery</Description>
+                    <Description>Install QEMU guest agent</Description>
                     <Order>12</Order>
                 </SynchronousCommand>
             </FirstLogonCommands>
@@ -259,7 +245,7 @@ Installation Notes:
             <TimeZone>Pacific Standard Time</TimeZone>
             <UserAccounts>
                 <AdministratorPassword>
-                    <Value></Value>
+                    <Value>Password#1</Value>
                     <PlainText>true</PlainText>
                 </AdministratorPassword>
                 <LocalAccounts>
