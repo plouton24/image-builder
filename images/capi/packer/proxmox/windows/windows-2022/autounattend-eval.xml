@@ -1,21 +1,4 @@
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
-<!--*************************************************
-Proxmox Windows Server 2022 Answer File
-
-Assumptions and notes:
-
-- This file assumes licensed installation media. Remove the ProductKey entries
-  below if you are building from an evaluation ISO.
-- The build currently installs /IMAGE/INDEX 1 from the Windows Server 2022 ISO.
-- The VirtIO driver ISO is expected to be attached as D: and to expose the
-  NetKVM, viostor, and vioscsi Windows Server 2022 amd64 paths used below.
-- The generated helper ISO is expected to be attached as F: and to contain
-  enable_winrm.ps1, disable-network-discovery.cmd, and Install_agent.ps1.
-- The VM is expected to boot in UEFI mode and install to disk 0 using the
-  EFI/MSR/Primary GPT layout defined here. Windows is installed to partition 3.
-- The Administrator password placeholders in oobeSystem are rewritten by
-  hack/windows-unattend.py from WINDOWS_ADMIN_PASSWORD or packer_cache/unattend.json.
-**************************************************-->    
     <settings pass="windowsPE">
         <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <DriverPaths>
@@ -97,10 +80,6 @@ Assumptions and notes:
                 <AcceptEula>true</AcceptEula>
                 <FullName>Administrator</FullName>
                 <Organization>Organization</Organization>
-                <ProductKey>
-                    <Key>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</Key>
-                    <WillShowUI>OnError</WillShowUI>
-                </ProductKey>
             </UserData>
             <EnableFirewall>true</EnableFirewall>
         </component>
@@ -150,7 +129,6 @@ Assumptions and notes:
         </component>
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <ComputerName />
-            <ProductKey>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</ProductKey>
         </component>
     </settings>
     <settings pass="oobeSystem">

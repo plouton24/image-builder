@@ -9,5 +9,8 @@
   "iso_virtio": "local:iso/virtio-win-0.1.285.iso",
   "cpu_type": "host",
   "goss_version": "0.4.9",
-  "cloudbase_init_version": "1.1.6"
+  "cloudbase_init_version": "1.1.6",
+  "cloudbase_nocloud_metadata_file": "META_DATA",
+  "cloudbase_nocloud_networkdata_file": "NETWORK_CONFIG",
+  "cloudbase_nocloud_userdata_file": "USER_DATA"
 }

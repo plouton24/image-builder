@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Apply Proxmox NoCloud network data staged as NETWORK_CONFIG."""
+"""Apply Proxmox NoCloud network data from a config-drive file."""
 
 import logging
 import os
+import string
 import sys
-
-from cloudbaseinit.plugins.common import networkconfig
-from cloudbaseinit.metadata.services.nocloudservice import NoCloudNetworkConfigParser
-from cloudbaseinit.utils import serialization
 
 try:
     from oslo_log import log as oslo_logging
@@ -31,43 +28,120 @@ except Exception:  # pragma: no cover - fallback when oslo logging is unavailabl
     LOG = logging.getLogger(__name__)
 
 
-NETWORK_DATA_PATH = r"D:\NETWORK_CONFIG"
+DEFAULT_NETWORK_DATA_FILENAMES = ("NETWORK_CONFIG", "network-config")
+
+
+def _iter_search_roots():
+    search_roots = os.environ.get("PROXMOX_NETWORK_DATA_SEARCH_ROOTS")
+    if search_roots:
+        for root in search_roots.split(os.pathsep):
+            root = root.strip()
+            if root:
+                yield root
+        return
+
+    for drive_letter in string.ascii_uppercase:
+        yield "%s:\\" % drive_letter
+
+
+def _iter_candidate_paths():
+    override_path = os.environ.get("PROXMOX_NETWORK_DATA_PATH", "").strip()
+    if override_path:
+        yield override_path
+        return
+
+    for root in _iter_search_roots():
+        normalized_root = root.rstrip("\\/")
+        for filename in DEFAULT_NETWORK_DATA_FILENAMES:
+            yield "%s\\%s" % (normalized_root, filename)
+
+
+def find_network_data_path(path_exists=os.path.exists):
+    for candidate_path in _iter_candidate_paths():
+        if path_exists(candidate_path):
+            return candidate_path
+    return None
+
+
+def load_network_data(network_data_path, open_file=open, parser=None):
+    if parser is None:
+        from cloudbaseinit.utils import serialization
+
+        parser = serialization.parse_json_yaml
+
+    with open_file(network_data_path, "r", encoding="utf-8") as network_data_file:
+        raw_network_data = network_data_file.read()
+
+    network_data = parser(raw_network_data)
+    if not isinstance(network_data, dict):
+        raise ValueError(
+            "Proxmox network data parsed into %r, expected dict" %
+            type(network_data)
+        )
+
+    return network_data
+
+
+def apply_network_data(network_data, network_parser=None, plugin_factory=None):
+    if network_parser is None:
+        from cloudbaseinit.metadata.services.nocloudservice import (
+            NoCloudNetworkConfigParser,
+        )
+
+        network_parser = NoCloudNetworkConfigParser.parse
+
+    if plugin_factory is None:
+        from cloudbaseinit.plugins.common import networkconfig
+
+        plugin_factory = networkconfig.NetworkConfigPlugin
+
+    network_details = network_parser(network_data)
+    if not network_details:
+        LOG.warning("NoCloud network parser returned no interfaces")
+        return False
+
+    plugin = plugin_factory()
+    process_network_details = getattr(plugin, "_process_network_details_v2", None)
+    if process_network_details is None:
+        raise AttributeError(
+            "Cloudbase-Init network plugin is missing _process_network_details_v2"
+        )
+
+    process_network_details(network_details)
+    return True
 
 
 def main():
-    try:
-        if not os.path.exists(NETWORK_DATA_PATH):
-            LOG.info("No Proxmox network data found at %s", NETWORK_DATA_PATH)
-            return 0
+    network_data_path = find_network_data_path()
+    if not network_data_path:
+        LOG.info(
+            "No Proxmox network data found in candidate paths: %s",
+            ", ".join(_iter_candidate_paths()),
+        )
+        return 0
 
-        with open(NETWORK_DATA_PATH, "r", encoding="utf-8") as network_data_file:
-            raw_network_data = network_data_file.read()
+    try:
+        network_data = load_network_data(network_data_path)
     except Exception:
-        LOG.exception("Failed to load Proxmox network data from %s", NETWORK_DATA_PATH)
+        LOG.exception(
+            "Failed to load Proxmox network data from %s", network_data_path
+        )
         return 0
 
     try:
-        network_data = serialization.parse_json_yaml(raw_network_data)
-    except serialization.YamlParserConfigError:
-        LOG.exception("Proxmox network data could not be parsed as YAML or JSON")
+        LOG.info("Applying Proxmox network data from %s", network_data_path)
+        applied = apply_network_data(network_data)
+    except Exception:
+        LOG.exception(
+            "Failed to apply Proxmox network data from %s", network_data_path
+        )
         return 0
 
-    if not isinstance(network_data, dict):
-        LOG.error("Proxmox network data parsed into %r, expected dict", type(network_data))
-        return 0
+    if not applied:
+        LOG.warning(
+            "No network interfaces were applied from %s", network_data_path
+        )
 
-    network_details = NoCloudNetworkConfigParser.parse(network_data)
-    if not network_details:
-        LOG.warning("NoCloud network parser returned no interfaces")
-        return 0
-
-    plugin = networkconfig.NetworkConfigPlugin()
-    if not hasattr(plugin, "_process_network_details_v2"):
-        LOG.error("Cloudbase-Init network plugin is missing _process_network_details_v2")
-        return 0
-
-    LOG.info("Applying Proxmox network data from %s", NETWORK_DATA_PATH)
-    plugin._process_network_details_v2(network_details)
     return 0
 
 

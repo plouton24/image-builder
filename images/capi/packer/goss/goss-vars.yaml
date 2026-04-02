@@ -707,4 +707,4 @@ windows:
         exists: true
         filetype: file
         contains:
-        - "Apply Proxmox NoCloud network data staged as NETWORK_CONFIG."
+        - "Apply Proxmox NoCloud network data from a config-drive file."
